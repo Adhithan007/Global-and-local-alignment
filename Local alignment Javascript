@@ -1,0 +1,126 @@
+function final_score_SW(S1,S2,mat){
+    var penalty=-2
+    for (var r=1;r<S2.length;r++){
+    for(var c=1;c<S1.length;c++){
+    score=-1
+    if(S1[c]==S2[r]){
+        score=1
+    }
+    var up = mat[r-1][c]+penalty
+    var left = mat[r][c-1]+penalty
+    var diagonal = (mat[r-1][c-1])+score
+    
+    if(up<0) {up=0};
+    if(left<0) {left=0};
+    if(diagonal<0) {diagonal=0};
+    max_val=Math.max(up,left,diagonal)
+    mat[r][c]=max_val
+    }
+     
+}
+    return mat
+}
+
+
+function trackback_SW(S1,S2,mat){   
+        loop=true
+        r=S2.length
+        c=S1.length
+    direction=[]
+    while (loop==true){
+            if (mat[r][c]>mat[r-1][c-1]){
+                direction.push('match')}
+            else{
+                direction.push('mismatch')} 
+
+            r=r-1
+            c=c-1
+            if (r==0 | c==0){
+                loop=false
+            }  
+    }
+    symbol = []
+    direction=direction.reverse()
+    
+    for (i=0;i<direction.length;i++){
+    if (direction[i]=='match'){
+                symbol.push('*')
+                
+    }
+            else{
+                symbol.push('|')
+        }
+    }
+   var  final=[S1,S2,symbol]
+    final=[S1,S2,symbol]
+    s1=S1.split('')
+    s1=s1.join('   ')
+    s2=S2.split('')
+    s2=s2.join('   ')
+    sym=symbol.join('   ')
+        console.log(s1)
+        console.log(sym)
+        console.log(s2)
+    
+    arr=[]
+    for(i=0;i<symbol.length;i++){
+        if(symbol[i]=='*'){
+            arr.push(S1[i])
+        }
+        if(symbol[i]=='|'){
+            arr.push(" ")
+        }
+        
+    }
+    arr=arr.join("")
+    arr=arr.split(" ")
+    ar=[]
+    for(j=0;j<arr.length;j++){
+        if(arr[j].length>1){
+            ar.push(arr[j])
+        }
+    }
+    console.log("  ")
+    console.log("Common Sequence:   ")
+    for(k=0;k<ar.length;k++){
+    console.log("                   ",ar[k])    
+    }
+    
+    return final.push([ar])
+    }
+    
+    
+    function SmithWaterman_local(S1,S2){
+    var s11=S1
+    var s22=S2
+    console.log("Sequence 1:     ",S1)
+    console.log("Sequence 2:     ",S2)
+    console.log(" ")
+    console.log("Matrix :    ")
+    console.log("  ")
+    var S1=" "+S1;
+    
+    var S2=" "+S2;
+    var mat=NMmatrix(S2.length,S1.length,0);
+    var mat=final_score_SW(S1,S2,mat)
+    
+    s1=S1.split('')
+    s1=s1.join('  ')
+    console.log("  ",s1)
+    s2=S2.split('')
+    
+     for (var r=0;r<S2.length;r++){
+         matr=mat[r].join('  ')
+        console.log(s2[r],"",matr)
+     }
+        console.log(" ")
+        console.log("Local Alignment  :      ")
+        trackback_SW(s11,s22,mat)
+}
+
+
+
+
+var S1= "GTTCAC"  
+var S2= "ATTCGT"
+SmithWaterman_local(S1,S2)
