@@ -1,0 +1,167 @@
+ function NMmatrix(numrows, numcols, initial) {
+    var arr = [];
+    for (var i = 0; i < numrows; ++i) {
+    var columns = [];
+    for (var j = 0; j < numcols; ++j) {
+    columns[j] = initial;
+    }
+    arr[i] = columns;
+    }
+    return arr;
+   }
+   
+   
+   function fill_penalty_NW(S1,S2){
+    var mat=NMmatrix(S2.length+1,S1.length+1,0);
+    var penalty=-2
+    for (var r=0;r<S2.length+1;r++){
+        for(var c=0;c<S1.length+1;c++){
+          if(r==0 & c!=0){
+           mat[r][c]=mat[r][c-1]+penalty
+          } 
+        if(r!=0 & c==0){
+            mat[r][c]=mat[r-1][c]+penalty
+          }  
+    }
+    
+}
+    return mat
+}
+
+
+function final_score_NW(S1,S2,mat){
+    var penalty=-2
+    for (var r=1;r<S2.length+1;r++){
+    for(var c=1;c<S1.length+1;c++){
+    score=-1
+    if(S1[c]==S2[r]){
+        score=1
+    }
+    var up = mat[r-1][c]+penalty
+    var left = mat[r][c-1]+penalty
+    var diagonal = (mat[r-1][c-1])+score
+    max_val=Math.max(up,left,diagonal)
+    mat[r][c]=max_val
+    }
+     
+}
+    return mat
+}
+
+
+function trackback_NW(S1,S2,mat){
+    loop=true
+    r=S2.length
+    c=S1.length
+    direction=[]
+    dict1=[]
+    while (loop==true){
+        if (S2[r-1]==S1[c-1]){
+                direction.push('d')
+                r=r-1
+                c=c-1
+        }
+        else{
+              up=mat[r-1][c]
+              diag=mat[r-1][c-1]
+              left=mat[r][c-1]
+            dict1={0:'u',1:'d',2:'l'}
+            index = indexOfMax([up,diag,left])
+            d = dict1[index]
+            direction.push(d)
+               if (index==0){
+                    r=r-1
+               }
+                else if (index==1){
+                    r=r-1;c=c-1
+                }
+                else{
+                    c=c-1
+                }       
+        }
+        if (r==0 | c==0){
+                loop=false        
+        }
+    }
+        new_s2 = ""
+        direction=direction.reverse()
+        s2_index = 0
+        arrows=[]
+        for (i=0; i<direction.length;i++){
+            if (direction[i]=='l'){
+                new_s2+='-'
+                arrows.push("←")}
+            else if (direction[i]=='d'){
+                new_s2+=S2[s2_index]
+                s2_index+=1
+                arrows.push("↖")
+            }
+        
+    }
+    final=[S1,new_s2,arrows]
+    s1=S1.split('')
+    s1=s1.join('   ')
+    ns2=new_s2.split('')
+    ns2=ns2.join('   ')
+    arrow=arrows.join('   ')
+    console.log(s1)
+    console.log(arrow)
+    console.log(ns2)
+        console.log(" ")
+    console.log("  ")
+    console.log("Final Sequence 1:     ",S1)
+    console.log("Final Sequence 2:     ",new_s2)
+}
+
+function indexOfMax(arr) {
+    if (arr.length === 0) {
+        return -1;
+    }
+
+    var max = arr[0];
+    var maxIndex = 0;
+
+    for (var i = 1; i < arr.length; i++) {
+        if (arr[i] > max) {
+            maxIndex = i;
+            max = arr[i];
+        }
+    }
+
+    return maxIndex;
+}
+
+
+function Needleman_wunsch_global(S1,S2){
+    var mat=fill_penalty_NW(S1,S2)
+    var mat=final_score_NW(S1,S2,mat)
+    console.log("Sequence 1:     ",S1)
+    console.log("Sequence 2:     ",S2)
+    console.log(" ")
+    console.log("Matrix :    ")
+    console.log("  ")
+    s1=S1.split('')
+    s1=" "+(s1.join('   '))
+    console.log("      ",s1)
+    s2=" "+S2
+    s2=s2.split('')
+     for (var r=0;r<S2.length+1;r++){
+         matr=mat[r].join('  ')
+        console.log(s2[r],"",matr)
+     }
+        console.log(" ")
+        console.log("Global Alignment  :      ")
+        trackback_NW(S1,S2,mat)
+
+}
+
+
+
+S1="AATCG"  
+S2="AACG"
+Needleman_wunsch_global(S1,S2)
+
+
+
+
+
